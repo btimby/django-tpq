@@ -18,7 +18,7 @@ dependencies:
 
 travis:
 	flake8 tpq
-	coverage run tests.py
+	$(MAKE) -C django_tpq test
 
 coveralls:
 	coveralls -v
