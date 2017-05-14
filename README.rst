@@ -1,3 +1,14 @@
+.. image:: https://travis-ci.org/btimby/django_tpq.svg?branch=master
+   :alt: Travis CI Status
+   :target: https://travis-ci.org/btimby/django_tpq
+
+.. image:: https://coveralls.io/repos/github/btimby/django_tpq/badge.svg?branch=master
+    :target: https://coveralls.io/github/btimby/django_tpq?branch=master
+    :alt: Code Coverage
+
+.. image:: https://badge.fury.io/py/django_tpq.svg
+    :target: https://badge.fury.io/py/django_tpq
+
 Trivial Postgres Queue for Django
 =================================
 
