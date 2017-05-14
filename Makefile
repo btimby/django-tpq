@@ -17,8 +17,8 @@ dependencies:
 	pip install coveralls
 
 travis:
-	flake8 tpq
-	$(MAKE) -C django_tpq test
+	flake8 django_tpq
+	$(MAKE) -C django_tpq travis
 
 coveralls:
 	coveralls -v
