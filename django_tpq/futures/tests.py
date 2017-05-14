@@ -4,7 +4,7 @@ import mock
 
 from django.test import TestCase
 
-from futures import Future
+from futures import Future, FutureResult
 from futures.decorators import future
 
 from tpq import QueueEmpty
@@ -51,5 +51,9 @@ class FutureTestCase(TestCase):
     @mock.patch('tpq.put', mock_put)
     def test_delay(self):
         f_foo = future(queue_name='foo_queue')(foo)
+
         r = f_foo.delay(3, 6)
+        self.assertIsInstnace(r, FutureResult)
+
         m = mock_get('foo_queue')
+        self.assertIsInstance(m, dict)

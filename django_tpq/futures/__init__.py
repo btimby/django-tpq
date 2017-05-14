@@ -50,6 +50,7 @@ class Future(object):
         args = pickle.loads(message['args'])
         kwargs = pickle.loads(message['kwargs'])
 
+        results = {}
         try:
             r = t(*args, **kwargs)
         except Exception as e:
