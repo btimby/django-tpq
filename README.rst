@@ -12,8 +12,9 @@
 Trivial Postgres Queue for Django
 =================================
 
-This is a Django application that integrates tpq. This application provides
-basic message queue capabilities as well as a high-level futures implementation.
+This is a Django application that integrates
+`tpq <https://github.com/btimby/tpq/>`_. This application provides basic
+message queue capabilities as well as a high-level futures implementation.
 
 Message Queue
 -------------
