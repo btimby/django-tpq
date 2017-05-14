@@ -53,7 +53,7 @@ class FutureTestCase(TestCase):
         f_foo = future(queue_name='foo_queue')(foo)
 
         r = f_foo.delay(3, 6)
-        self.assertIsInstnace(r, FutureResult)
+        self.assertIsInstance(r, FutureResult)
 
         m = mock_get('foo_queue')
         self.assertIsInstance(m, dict)
