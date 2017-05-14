@@ -1,2 +1,4 @@
 Django
-# tpq
+tpq
+mock
+flake8
