@@ -30,14 +30,13 @@ you, but you must call it from the migration). Then migrate and use your queue.
 
     class MyQueue(BaseQueue):
         pass
-    ```
 
 ::
 
     $ python manage.py makemigrations
 
 Now edit the migration and add the RunPython step as is done with the futures
-`initial migration <django_tpq/futures/migrations/0001_initial.py>`_.
+`initial migration <https://github.com/btimby/django-tpq/blob/master/django_tpq/futures/migrations/0001_initial.py>`_.
 You will also need to customize the model name in the ``forward`` function.
 
 ::
@@ -108,7 +107,7 @@ cache. By default the ``default`` cache is used, but you can use the
 cache you want to be used for results. Results have a TTL of 60 minutes by
 default but you can adjust this using the ``FUTURES_RESULT_TTL`` setting.
 
-* Note that if you use a very short TTL and start polling after it has already
+\* Note that if you use a very short TTL and start polling after it has already
 expired, you will never see results. Further, if you use wait, you will wait
 forever.
 
@@ -156,12 +155,12 @@ purposes.
 
 The task model has the following fields.
 
- - name - The python module.function of the task.
- - running - The number of currently executing tasks of this type.
- - total - The total number of executed tasks of this type.
- - failed - The number of tasks resulting in an exception.
- - last_seen - The timestamp of the most recent execution of the task.
- - first_seen - The timestamp of the least recent execution of the task.
+- ``name`` - The python module.function of the task.
+- ``running`` - The number of currently executing tasks of this type.
+- ``total`` - The total number of executed tasks of this type.
+- ``failed`` - The number of tasks resulting in an exception.
+- ``last_seen`` - The timestamp of the most recent execution of the task.
+- ``first_seen`` - The timestamp of the least recent execution of the task.
 
 Being a model, you can use the Django ORM to report on these fields any way you
 see fit.
