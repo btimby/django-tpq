@@ -1,5 +1,5 @@
 from django.core.management import call_command
-from django.test import TestCase
+from django.test import TransactionTestCase
 
 from futures.decorators import future
 from futures.models import FutureStat
@@ -10,7 +10,9 @@ def foo(a, b):
     return a + b
 
 
-class TestExecutor(TestCase):
+# We use TransactionTestCase to ensure our queue is visible to another
+# connection/thread/process.
+class TestExecutor(TransactionTestCase):
     """
     Test executor command.
 
@@ -24,7 +26,7 @@ class TestExecutor(TestCase):
         r = foo.async(3, 9)
 
         # Execute it.
-        call_command('futures_executor', once=True, wait=0)
+        call_command('futures_executor', restart=False, workers=1, limit=1)
 
         # Make sure our function was called.
         self.assertEqual(12, r.result())
