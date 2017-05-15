@@ -29,7 +29,7 @@ FUTURES_REGISTRY = {}
 
 
 def set_result(uid, obj, progress=0):
-    """Place Future results into cache."""
+    """Place a Future result into cache."""
     if isinstance(obj, tuple) and isinstance(obj[1], Exception):
         # Wrap the tb so it can be transported and re-raised.
         et, ev, tb = obj
@@ -46,11 +46,13 @@ def set_result(uid, obj, progress=0):
 
 
 def get_result(uid):
-    """Retrieve Future results from cache."""
+    """Retrieve a Future result from cache."""
     cache = caches[settings.FUTURES_CACHE_BACKEND]
     result = cache.get('futures:%s' % uid)
     if result is None:
         return
+    # Clean this up even though we set a TTL.
+    cache.delete('futures:%s' % uid)
     # TODO: how do we want to report/represent progress? One idea is to use a
     # generator such that each future function yields it's progress, and we
     # update the result with that progress.
@@ -178,12 +180,12 @@ class Future(object):
             try:
                 r = future(*args, **kwargs)
             except:
-                LOGGER.warning('Future exception in %s', future.name,
+                LOGGER.warning('Future "%s" raised exception', future.name,
                                exc_info=True)
                 failed['failed'] = F('failed') + 1
                 set_result(message['uid'], sys.exc_info())
             else:
-                LOGGER.debug('Future success %s', future.name)
+                LOGGER.debug('Future "%s" successful', future.name)
                 set_result(message['uid'], r)
         finally:
             stat.update(running=F('running') - 1, **failed)
