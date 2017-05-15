@@ -3,7 +3,7 @@ dist: trusty
 language: python
 env:
   global:
-  - TPQ_URL=postgresql://postgres@localhost/tpq
+    - DATABASE_URL=postgresql://postgres@localhost/django_tpq
   matrix:
   - DJANGO=1.10
 services:
@@ -15,7 +15,7 @@ python:
 install:
 - make dependencies
 before_script:
-- psql -c 'create database tpq' -U postgres
+- psql -c 'create database django_tpq' -U postgres
 script:
 - make travis
 after_success:

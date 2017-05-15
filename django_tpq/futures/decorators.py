@@ -3,7 +3,7 @@ Decorators for django_tpq.
 """
 from __future__ import absolute_import
 
-from futures import Future
+from futures.futures import Future
 
 
 def future(*args, **kwargs):
