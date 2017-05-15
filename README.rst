@@ -112,7 +112,7 @@ Tasks are executed by a daemon started using a Django management command.
 
 ::
 
-    $ ../venv/bin/python manage.py futures_executor --help
+    $ python manage.py futures_executor --help
     usage: manage.py futures_executor [-h] [--version] [-v {0,1,2,3}]
                                       [--settings SETTINGS]
                                       [--pythonpath PYTHONPATH] [--traceback]
