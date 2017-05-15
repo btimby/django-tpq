@@ -45,6 +45,13 @@ def bar(a, b):
     return a / 0
 
 
+def baz(a, b):
+    """
+    Slow function.
+    """
+    time.sleep(a)
+
+
 class FutureTestCase(TestCase):
     def test_decorator(self):
         # Create a function for testing.
@@ -117,6 +124,16 @@ class FutureTestCase(TestCase):
         Future.execute(m)
 
         self.assertEqual(9, r.result())
+
+    def test_result_timeout(self):
+        """Ensure awaiting results times out."""
+        f_foo = future()(foo)
+
+        # Run the function in async mode to enqueue it.
+        r = f_foo.async(3, 6)
+
+        # Ensure no result is available.
+        self.assertIsNone(r.result(wait=0.1))
 
     @mock.patch('tpq.put', mock_put)
     @mock.patch('tpq.get', mock_get)

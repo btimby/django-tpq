@@ -201,7 +201,7 @@ class FutureResult(object):
         self.uid = uid
         self.task = task
 
-    def result(self, timeout=0):
+    def result(self, wait=0):
         """
         Wait for Future results.
         """
@@ -213,8 +213,8 @@ class FutureResult(object):
             result = get_result(self.uid)
             if result is not None:
                 return result
-            if timeout == 0:
+            if wait == 0:
                 break
-            if timeout > 0:
-                timeout -= 1
-            time.sleep(1.0)
+            if wait > 0:
+                wait = max(0, wait - 0.5)
+            time.sleep(min(wait, 0.5))
