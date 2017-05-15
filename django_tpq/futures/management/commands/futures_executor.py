@@ -2,7 +2,6 @@ from __future__ import absolute_import
 
 import logging
 
-from django.apps import apps
 from django.core.management.base import BaseCommand
 
 from futures.futures import (
@@ -27,7 +26,6 @@ class Command(BaseCommand):
                             help='Run one, then exit.')
         parser.add_argument('--wait', type=int, default=0,
                             help='Wait time. Useful with --once.')
-
 
     def handle(self, *args, **options):
         """

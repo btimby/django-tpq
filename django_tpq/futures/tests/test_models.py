@@ -1,12 +1,16 @@
 from django.test import TestCase
 
-from futures.models import FutureQueue, FutureStat
+from futures.models import FutureQueue
 
 
 D = {'foo': 'foo'}
 
 
 class TestManager(TestCase):
+    """
+    Test the BaseQueueManager
+    """
+
     def test_not_implemented(self):
         """Test manager extraneous methods."""
         with self.assertRaises(NotImplementedError):
@@ -29,6 +33,10 @@ class TestManager(TestCase):
 
 
 class TestModel(TestCase):
+    """
+    Test the FutureQueue model.
+    """
+
     def setUp(self):
         FutureQueue.objects.clear()
 
