@@ -37,7 +37,7 @@ you, but you must call it from the migration). Then migrate and use your queue.
     $ python manage.py makemigrations
 
 Now edit the migration and add the RunPython step as is done with the futures
-`initial migration <blob/master/django_tpq/futures/migrations/0001_initial.py>`_.
+`initial migration <django_tpq/futures/migrations/0001_initial.py>`_.
 You will also need to customize the model name in the ``forward`` function.
 
 ::
