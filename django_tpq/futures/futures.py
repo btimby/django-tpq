@@ -219,4 +219,4 @@ class FutureResult(object):
                 break
             if wait > 0:
                 wait = max(0, wait - 0.5)
-            time.sleep(min(wait, 0.5))
+            time.sleep(wait if wait > 0 else 0.5)

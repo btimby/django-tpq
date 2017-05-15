@@ -93,6 +93,10 @@ CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
         'LOCATION': '/var/tmp/django_cache',
+        'OPTIONS': {
+            # Necessary to allow stress test to complete.
+            'MAX_ENTRIES': 2000,
+        },
     }
 }
 

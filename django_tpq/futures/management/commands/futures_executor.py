@@ -7,6 +7,7 @@ import time
 import threading
 
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import BaseCommand
 from django import db
 
@@ -18,12 +19,14 @@ from futures.futures import (
 LOGGER = logging.getLogger(__name__)
 
 
-def close_connections():
+def delete_connections():
     """
-    Close and delete Django DB connections.
+    Delete Django DB connections.
+
+    Leave the connection open, but remove it so a new one will be open for this
+    process.
     """
     for c in db.connections:
-        db.connections[c].close()
         del db.connections[c]
 
 
@@ -38,6 +41,10 @@ def executor_t(Model, stopping, limit=-1, wait=0, **options):
 
         try:
             Future.execute(Model.objects.dequeue(wait=wait))
+        except ObjectDoesNotExist:
+            LOGGER.info('Queue empty, sleeping')
+            time.sleep(0.5)
+            continue
         except Exception as e:
             LOGGER.exception(e)
 
@@ -61,12 +68,15 @@ def executor_p(Model, limit=-1, wait=0, threads=1, **options):
     """
     stopping = threading.Event()
 
-    def _signal(signum, frame):
+    def _signal(*args):
         LOGGER.info('Received signal')
         stopping.set()
 
     # Exit gracefully (after current work) on TERM signal.
     signal.signal(signal.SIGTERM, _signal)
+
+    # Ensure database connections are not inherited.
+    delete_connections()
 
     def _thread(**kwargs):
         t = threading.Thread(target=executor_t, args=(Model, stopping),
@@ -83,7 +93,7 @@ def executor_p(Model, limit=-1, wait=0, threads=1, **options):
         t.join()
         LOGGER.info('Thread %s died', t.ident)
 
-    LOGGER.info('Process exiting')
+    LOGGER.info('All threads terminated, process exiting')
 
 
 class Command(BaseCommand):
@@ -116,6 +126,7 @@ class Command(BaseCommand):
         Dequeue and execute futures.
         """
         Model = get_queue_model(options['queue_name'])
+        stopping = threading.Event()
 
         def _process(**kwargs):
             p = multiprocessing.Process(target=executor_p, args=(Model,),
@@ -123,16 +134,18 @@ class Command(BaseCommand):
             p.start()
             return p
 
-        # Ensure database connections are not inherited.
-        close_connections()
+        def _signal(*args):
+            stopping.set()
+
+        signal.signal(signal.SIGTERM, _signal)
 
         pool = []
-        LOGGER.info('Starting %s processes', options['workers'])
-        for i in range(options['workers']):
+        LOGGER.info('Starting %s processes', options['processes'])
+        for i in range(options['processes']):
             pool.append(_process(**options))
 
         try:
-            while True:
+            while not stopping.is_set():
 
                 # Check if any workers have died.
                 for i, p in enumerate(pool):
@@ -158,4 +171,4 @@ class Command(BaseCommand):
             p.terminate()
             p.join()
 
-        LOGGER.info('All workers terminated')
+        LOGGER.info('All processes terminated')
