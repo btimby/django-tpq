@@ -78,14 +78,14 @@ Then call that task. You can optionally wait or poll for the results.
     f = long_running_function.async('argument_1')
 
     while True:
-        if f.is_done():
-            try:
-                r = f.result()
-            except Exception:
-                # Exceptions are re-raised.
-                LOGGER.exception('Future failed', exc_info)
-            else:
-                break
+        try:
+            r = f.result()
+        except Exception:
+            # Exceptions are re-raised.
+            LOGGER.exception('Future failed', exc_info)
+            break
+        else:
+            break
         time.sleep(10)
 
     print(r)
@@ -104,9 +104,13 @@ Then call that task. You can optionally wait or poll for the results.
 Function calls are dispatched via a message queue. Arguments are pickled, so you
 can send any picklable Python objects. Results are delivered via your configured
 cache. By default the ``default`` cache is used, but you can use the
-``TPQ_RESULT_CACHE`` setting to provide an alternate name for the Django cache
-you want to be used for results. Results have a TTL of 60 minutes by default
-but you can adjust this using the ``TPQ_RESULT_TTL`` setting.
+``FUTURES_RESULT_CACHE`` setting to provide an alternate name for the Django
+cache you want to be used for results. Results have a TTL of 60 minutes by
+default but you can adjust this using the ``FUTURES_RESULT_TTL`` setting.
+
+* Note that if you use a very short TTL and start polling after it has already
+expired, you will never see results. Further, if you use wait, you will wait
+forever.
 
 Tasks are executed by a daemon started using a Django management command.
 
