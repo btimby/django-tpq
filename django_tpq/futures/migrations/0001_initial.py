@@ -5,6 +5,13 @@ from __future__ import unicode_literals
 import django.contrib.postgres.fields.jsonb
 from django.db import migrations, models
 
+import tpq
+
+
+def forwards(apps, schema_editor):
+    with tpq.Queue('futures_futurequeue', conn=schema_editor.connection) as q:
+        q.create()
+
 
 class Migration(migrations.Migration):
 
@@ -36,4 +43,5 @@ class Migration(migrations.Migration):
                 ('first_seen', models.DateTimeField(auto_now=True)),
             ],
         ),
+        migrations.RunPython(forwards, hints={'model_name': 'FutureQueue'})
     ]

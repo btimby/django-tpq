@@ -20,10 +20,9 @@ Message Queue
 -------------
 
 To implement a message queue, you must first create a model derived from the
-abstract ``BaseQueue`` model. Once done, use the `queuemigrations` management
-command to create the migrations for your model. The standard `makemigrations`
-is not capable of producing the custom SQL needed for triggers and supporting
-database objects.
+abstract ``BaseQueue`` model. Once done, create a migration for that model, then
+edit the migration to add some additional database objects (tpq does this for
+you, but you must call it from the migration). Then migrate and use your queue.
 
 .. code:: python
 
@@ -35,18 +34,23 @@ database objects.
 
 ::
 
-    $ python manage.py queuemigrations
+    $ python manage.py makemigrations
+
+Now edit the migration and add the RunPython step as is done with the futures
+'initial migration <django_tpq/futures/migrations/0001_initial.py>`_. You will
+also need to customize the model name in the ``forward`` function.
+
+::
+
     $ python manage.py migrate
 
-Now you can use the model and it's custom manager as the interface to your
-queue.
 
 .. code:: python
 
     from myapp.models import MyQueue
 
-    MyQueue.objects.put({'field': 'value'})
-    message = MyQueue.objects.get()
+    MyQueue.objects.enqueue({'field': 'value'})
+    message = MyQueue.objects.dequeue()
 
 Futures
 -------
