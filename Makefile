@@ -21,7 +21,7 @@ travis:
 	$(MAKE) -C django_tpq travis
 
 coveralls:
-	coveralls -v
+	$(MAKE) -C django_tpq coveralls
 
 sdist:
 	python setup.py sdist
