@@ -120,7 +120,7 @@ class FutureResult(object):
         self.uid = uid
         self.task = task
 
-    def wait(self, timeout=0):
+    def result(self, timeout=0):
         """
         Wait for Future results.
         """

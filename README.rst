@@ -1,13 +1,13 @@
-.. image:: https://travis-ci.org/btimby/django_tpq.svg?branch=master
+.. image:: https://travis-ci.org/btimby/django-tpq.svg?branch=master
    :alt: Travis CI Status
-   :target: https://travis-ci.org/btimby/django_tpq
+   :target: https://travis-ci.org/btimby/django-tpq
 
-.. image:: https://coveralls.io/repos/github/btimby/django_tpq/badge.svg?branch=master
-    :target: https://coveralls.io/github/btimby/django_tpq?branch=master
+.. image:: https://coveralls.io/repos/github/btimby/django-tpq/badge.svg?branch=master
+    :target: https://coveralls.io/github/btimby/django-tpq?branch=master
     :alt: Code Coverage
 
-.. image:: https://badge.fury.io/py/django_tpq.svg
-    :target: https://badge.fury.io/py/django_tpq
+.. image:: https://badge.fury.io/py/django-tpq.svg
+    :target: https://badge.fury.io/py/django-tpq
 
 Trivial Postgres Queue for Django
 =================================
@@ -58,7 +58,7 @@ Then call that task. You can optionally wait or poll for the results.
 .. code:: python
     import time
 
-    from django_tpq.futures.decorators import task
+    from django_tpq.futures.decorators import future
 
 
     @task()
@@ -66,11 +66,11 @@ Then call that task. You can optionally wait or poll for the results.
         time.sleep(100)
 
     # You can execute the task without waiting for a result. This returns
-    # immediately and your task runs within another process.
-    long_running_function.delay('argument_1')
+    # immediately and your task runs within another process (fire and forget).
+    long_running_function.async('argument_1')
 
     # Or you can poll for the results (or check after you do some other work).
-    f = long_running_function.delay('argument_1')
+    f = long_running_function.async('argument_1')
 
     while True:
         if f.is_done():
@@ -117,16 +117,16 @@ purposes.
 
 .. code:: python
 
-    from django_tpq.futures.models import Task
+    from django_tpq.futures.models import FutureStat
 
-    Task.objects.all()
+    FutureStat.objects.all()
 
 The task model has the following fields.
 
  - name - The python module.function of the task.
  - running - The number of currently executing tasks of this type.
  - total - The total number of executed tasks of this type.
- - failures - The number of tasks resulting in an exception.
+ - failed - The number of tasks resulting in an exception.
  - last_seen - The timestamp of the most recent execution of the task.
  - first_seen - The timestamp of the least recent execution of the task.
 

@@ -89,13 +89,13 @@ class FutureTestCase(TestCase):
         r = f_foo.async(3, 6)
 
         # Ensure no result is available.
-        self.assertIsNone(r.wait())
+        self.assertIsNone(r.result())
 
         # This part would be done in the daemon.
         m = FutureQueue.objects.dequeue()
         Future.execute(m)
 
-        self.assertEqual(9, r.wait())
+        self.assertEqual(9, r.result())
 
     @mock.patch('tpq.put', mock_put)
     @mock.patch('tpq.get', mock_get)
@@ -109,14 +109,14 @@ class FutureTestCase(TestCase):
         r = f_bar.async(3, 6)
 
         # Ensure no result is available.
-        self.assertIsNone(r.wait())
+        self.assertIsNone(r.result())
 
         # This part would be done in the daemon.
         m = FutureQueue.objects.dequeue()
         Future.execute(m)
 
         with self.assertRaises(ZeroDivisionError):
-            r.wait()
+            r.result()
 
     @mock.patch('tpq.put', mock_put)
     @mock.patch('tpq.get', mock_get)
