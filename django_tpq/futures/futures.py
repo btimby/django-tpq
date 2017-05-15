@@ -7,18 +7,13 @@ import uuid
 import time
 import pickle
 
-from base64 import b64encode, b64decode
-
 from django.apps import apps
 from django.conf import settings
 from django.core.cache import caches
 from django.db.models import F
 from django.utils import timezone
 
-import tpq
-
 from futures.models import FutureStat
-from futures.models import FutureQueue
 
 
 DEFAULT_QUEUE_NAME = 'futures.FutureQueue'

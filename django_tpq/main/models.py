@@ -13,7 +13,8 @@ class BaseQueueManager(models.Manager):
 
     def dequeue(self, wait=-1):
         try:
-            return tpq.get(self.model._meta.db_table, wait=wait, conn=connection)
+            return tpq.get(self.model._meta.db_table, wait=wait,
+                           conn=connection)
         except tpq.QueueEmpty:
             raise ObjectDoesNotExist
 
