@@ -45,13 +45,6 @@ def bar(a, b):
     return a / 0
 
 
-def baz(a, b):
-    """
-    Slow function.
-    """
-    time.sleep(a)
-
-
 class FutureTestCase(TestCase):
     def test_decorator(self):
         # Create a function for testing.

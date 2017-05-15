@@ -93,7 +93,13 @@ Then call that future. You can optionally wait or poll for the results.
     f = long_running_function.call('argument_1')
 
     try:
-        r = f.result(wait=0)
+        # Wait for one second.
+        r = f.result(wait=1)
+
+        # ... do stuff ...
+
+        # Then wait indefinitely.
+        r = f.result(wait=-1)
     except Exception:
         # Exceptions are re-raised.
         LOGGER.exception('Future failed', exc_info)
