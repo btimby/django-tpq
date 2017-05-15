@@ -60,6 +60,7 @@ First you must register any function you wish to call asynchronously as a task.
 Then call that task. You can optionally wait or poll for the results.
 
 .. code:: python
+
     import time
 
     from django_tpq.futures.decorators import future
@@ -111,10 +112,34 @@ Tasks are executed by a daemon started using a Django management command.
 
 ::
 
-    $ python manage.py executor --help
+    $ ../venv/bin/python manage.py futures_executor --help
+    usage: manage.py futures_executor [-h] [--version] [-v {0,1,2,3}]
+                                      [--settings SETTINGS]
+                                      [--pythonpath PYTHONPATH] [--traceback]
+                                      [--no-color] [--queue_name QUEUE_NAME]
+                                      [--once] [--wait WAIT]
 
-     --foreground, -f - run in foreground
-     --threads, -t - number of concurrent executor threads
+    Daemon to execute futures.
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      --version             show program's version number and exit
+      -v {0,1,2,3}, --verbosity {0,1,2,3}
+                            Verbosity level; 0=minimal output, 1=normal output,
+                            2=verbose output, 3=very verbose output
+      --settings SETTINGS   The Python path to a settings module, e.g.
+                            "myproject.settings.main". If this isn't provided, the
+                            DJANGO_SETTINGS_MODULE environment variable will be
+                            used.
+      --pythonpath PYTHONPATH
+                            A directory to add to the Python path, e.g.
+                            "/home/djangoprojects/myproject".
+      --traceback           Raise on CommandError exceptions
+      --no-color            Don't colorize the command output.
+      --queue_name QUEUE_NAME
+                            The queue to monitor. default: futures.FutureQueue
+      --once                Run one, then exit.
+      --wait WAIT           Wait time. Useful with --once.
 
 Some task statistics are also stored in your Postgres database for reporting
 purposes.

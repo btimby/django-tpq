@@ -21,7 +21,8 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('--queue_name', default=DEFAULT_QUEUE_NAME,
-                            help='The queue to monitor')
+                            help='The queue to monitor. default: %s' %
+                            DEFAULT_QUEUE_NAME)
         parser.add_argument('--once', action='store_true', default=False,
                             help='Run one, then exit.')
         parser.add_argument('--wait', type=int, default=0,
