@@ -55,8 +55,8 @@ Futures
 -------
 
 Using the above as a foundation, a simple Futures implementation is provided.
-First you must register any function you wish to call asynchronously as a task.
-Then call that task. You can optionally wait or poll for the results.
+First you must register any function you wish to call asynchronously as a future.
+Then call that future. You can optionally wait or poll for the results.
 
 .. code:: python
 
@@ -65,12 +65,12 @@ Then call that task. You can optionally wait or poll for the results.
     from django_tpq.futures.decorators import future
 
 
-    @task()
+    @future()
     def long_running_function(*args):
         time.sleep(100)
 
-    # You can execute the task without waiting for a result. This returns
-    # immediately and your task runs within another process (fire and forget).
+    # You can execute the future without waiting for a result. This returns
+    # immediately and your future runs within another process (fire and forget).
     long_running_function.async('argument_1')
 
     # Or you can poll for the results (or check after you do some other work).
@@ -111,7 +111,7 @@ default but you can adjust this using the ``FUTURES_RESULT_TTL`` setting.
 expired, you will never see results. Further, if you use wait, you will wait
 forever.
 
-Tasks are executed by a daemon started using a Django management command.
+Futures are executed by a daemon started using a Django management command.
 
 ::
 
@@ -144,7 +144,7 @@ Tasks are executed by a daemon started using a Django management command.
       --once                Run one, then exit.
       --wait WAIT           Wait time. Useful with --once.
 
-Some task statistics are also stored in your Postgres database for reporting
+Some future statistics are also stored in your Postgres database for reporting
 purposes.
 
 .. code:: python
@@ -153,14 +153,14 @@ purposes.
 
     FutureStat.objects.all()
 
-The task model has the following fields.
+The ``FutureStat`` model has the following fields.
 
-- ``name`` - The python module.function of the task.
-- ``running`` - The number of currently executing tasks of this type.
-- ``total`` - The total number of executed tasks of this type.
-- ``failed`` - The number of tasks resulting in an exception.
-- ``last_seen`` - The timestamp of the most recent execution of the task.
-- ``first_seen`` - The timestamp of the least recent execution of the task.
+- ``name`` - The python module.function of the future.
+- ``running`` - The number of currently executing futures of this type.
+- ``total`` - The total number of executed futures of this type.
+- ``failed`` - The number of futures resulting in an exception.
+- ``last_seen`` - The timestamp of the most recent execution of the future.
+- ``first_seen`` - The timestamp of the least recent execution of the future.
 
 Being a model, you can use the Django ORM to report on these fields any way you
 see fit.
