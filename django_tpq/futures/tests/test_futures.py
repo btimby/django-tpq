@@ -2,15 +2,17 @@ from __future__ import absolute_import
 
 import mock
 
-from django.test import TestCase
+from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
-
-from futures.futures import Future, FutureResult
-from futures.decorators import future
+from django.test import TestCase
 
 import tpq
 
 from futures.models import FutureQueue, FutureStat
+from futures.futures import (
+    Future, FutureResult, JSONSerializer
+)
+from futures.decorators import future
 
 
 FAKE_QUEUE = {}
@@ -53,13 +55,32 @@ class FutureTestCase(TestCase):
 
         # Ensure it is wrapped by Future instance.
         self.assertIsInstance(f_foo, Future)
-        self.assertEqual('futures.FutureQueue', f_foo.queue_name)
+        self.assertEqual(settings.FUTURES_QUEUE_NAME, f_foo.queue_name)
 
         # Ensure it is still callable.
         self.assertEqual(8, f_foo(5, 3))
 
         # Ensure it is named properly.
         self.assertEqual('futures.tests.test_futures.foo', f_foo.name)
+
+    @mock.patch('tpq.put', mock_put)
+    @mock.patch('tpq.get', mock_get)
+    def test_json(self):
+        """Ensure JSON serializer works."""
+        f_foo = future(serializer=JSONSerializer)(foo)
+
+        # Run the function in async mode to enqueue it.
+        r = f_foo.async(3, 6)
+        self.assertIsInstance(r, FutureResult)
+
+        # Ensure we get a dictionary from the queue.
+        m = FutureQueue.objects.dequeue()
+        self.assertIsInstance(m, dict)
+        Future.execute(m)
+
+        # Ensure only one item was in the queue.
+        with self.assertRaises(ObjectDoesNotExist):
+            FutureQueue.objects.dequeue()
 
     @mock.patch('tpq.put', mock_put)
     @mock.patch('tpq.get', mock_get)

@@ -2,10 +2,11 @@ from __future__ import absolute_import
 
 import logging
 
+from django.conf import settings
 from django.core.management.base import BaseCommand
 
 from futures.futures import (
-    DEFAULT_QUEUE_NAME, Future, get_queue_model
+    Future, get_queue_model
 )
 
 
@@ -20,9 +21,10 @@ class Command(BaseCommand):
     help = 'Daemon to execute futures.'
 
     def add_arguments(self, parser):
-        parser.add_argument('--queue_name', default=DEFAULT_QUEUE_NAME,
+        parser.add_argument('--queue_name',
+                            default=settings.FUTURES_QUEUE_NAME,
                             help='The queue to monitor. default: %s' %
-                            DEFAULT_QUEUE_NAME)
+                            settings.FUTURES_QUEUE_NAME)
         parser.add_argument('--once', action='store_true', default=False,
                             help='Run one, then exit.')
         parser.add_argument('--wait', type=int, default=0,

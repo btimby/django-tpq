@@ -135,5 +135,6 @@ STATIC_URL = '/static/'
 
 
 # Project specific configuration.
+FUTURES_QUEUE_NAME = 'futures.FutureQueue'
 FUTURES_CACHE_BACKEND = 'default'
 FUTURES_CACHE_TTL = 300
