@@ -46,7 +46,7 @@ class TestExecutor(TransactionTestCase):
                                         'restart': False,
                                         'limit': 1,
                                         'wait': 0,
-        })
+                                    })
         p.start()
         p.join()
 
@@ -84,7 +84,7 @@ class TestExecutor(TransactionTestCase):
                                         'restart': True,
                                         'limit': 10,
                                         'wait': -1,
-        })
+                                    })
         p.start()
 
         start = time.time()
@@ -97,13 +97,15 @@ class TestExecutor(TransactionTestCase):
             t1.join()
             t2.join()
 
-            print('\nStress test enqueue wall time: %s' % (time.time() - start))
+            print('\nStress test enqueue wall time: %s' %
+                  (time.time() - start))
 
             self.assertEqual(count, len(results))
             for i, r in results:
                 self.assertEqual(i + 1, r.result(wait=-1))
 
-            print('\nStress test dequeue wall time: %s' % (time.time() - start))
+            print('\nStress test dequeue wall time: %s' %
+                  (time.time() - start))
 
         finally:
             p.terminate()
