@@ -5,7 +5,9 @@ from __future__ import absolute_import
 
 import uuid
 import time
-import pickle
+import functools
+
+import dill
 
 from django.apps import apps
 from django.conf import settings
@@ -24,7 +26,7 @@ def set_result(uid, obj, progress=0):
     if isinstance(obj, Exception):
         # TODO: store backtrace etc.
         pass
-    obj = pickle.dumps(obj)
+    obj = dill.dumps(obj)
     result = {
         'uid': uid,
         'obj': obj,
@@ -42,10 +44,15 @@ def get_result(uid):
     if result is None:
         return
     # TODO: how do we want to report/represent progress?
-    obj = pickle.loads(result['obj'])
+    obj = dill.loads(result['obj'])
     if isinstance(obj, Exception):
         raise obj
     return obj
+
+
+def get_queue_model(queue_name):
+    label, _, model = queue_name.partition('.')
+    return apps.get_model(app_label=label, model_name=model)
 
 
 class Future(object):
@@ -56,6 +63,7 @@ class Future(object):
     def __init__(self, f, queue_name=DEFAULT_QUEUE_NAME):
         self.f = f
         self.queue_name = queue_name
+        functools.update_wrapper(self, f)
 
     def __call__(self, *args, **kwargs):
         """
@@ -74,12 +82,11 @@ class Future(object):
         uid = str(uuid.uuid4())
         message = {
             'uid': uid,
-            'self': pickle.dumps(self, 0).decode('latin-1'),
-            'args': pickle.dumps(args, 0).decode('latin-1'),
-            'kwargs': pickle.dumps(kwargs, 0).decode('latin-1'),
+            'self': dill.dumps(self, 0).decode('latin-1'),
+            'args': dill.dumps(args, 0).decode('latin-1'),
+            'kwargs': dill.dumps(kwargs, 0).decode('latin-1'),
         }
-        label, _, model = self.queue_name.partition('.')
-        Model = apps.get_model(app_label=label, model_name=model)
+        Model = get_queue_model(self.queue_name)
         Model.objects.enqueue(message)
         return FutureResult(uid, self)
 
@@ -90,9 +97,9 @@ class Future(object):
 
         Manages FutureStat.
         """
-        t = pickle.loads(message['self'].encode('latin-1'))
-        args = pickle.loads(message['args'].encode('latin-1'))
-        kwargs = pickle.loads(message['kwargs'].encode('latin-1'))
+        t = dill.loads(message['self'].encode('latin-1'))
+        args = dill.loads(message['args'].encode('latin-1'))
+        kwargs = dill.loads(message['kwargs'].encode('latin-1'))
 
         stat, _ = FutureStat.objects.get_or_create(name=t.name)
         stat.update(last_seen=timezone.now(), total=F('total') + 1,
@@ -110,6 +117,9 @@ class Future(object):
         finally:
             stat.update(running=F('running') - 1, **failed)
 
+        # TODO: we may wish to do a NOTIFY here to inform any result() waiters
+        # that data may be available for them.
+
 
 class FutureResult(object):
     """
@@ -125,6 +135,10 @@ class FutureResult(object):
         Wait for Future results.
         """
         while True:
+            # TODO: I don't like polling, we could use LISTEN here, even
+            # globally so that any waiters would check if their future was
+            # complete. Even if all were awakened for each completed future, it
+            # would be more efficient than polling.
             result = get_result(self.uid)
             if result is not None:
                 return result

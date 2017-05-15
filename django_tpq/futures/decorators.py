@@ -11,6 +11,5 @@ def future(*args, **kwargs):
     Convert function into Future.
     """
     def decorator(f):
-        f = Future(f, *args, **kwargs)
-        return f
+        return Future(f, *args, **kwargs)
     return decorator
