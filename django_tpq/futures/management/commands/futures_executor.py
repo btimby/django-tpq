@@ -135,6 +135,7 @@ class Command(BaseCommand):
             return p
 
         def _signal(*args):
+            LOGGER.info('Received signal')
             stopping.set()
 
         signal.signal(signal.SIGTERM, _signal)
@@ -146,6 +147,10 @@ class Command(BaseCommand):
 
         try:
             while not stopping.is_set():
+
+                # TODO: use tpq.listen_wait(), then notify worker processes.
+                # Disable waiting in workers. Workers mostly sleep, not using
+                # connections.
 
                 # Check if any workers have died.
                 for i, p in enumerate(pool):
