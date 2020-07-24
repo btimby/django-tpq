@@ -34,7 +34,7 @@ setup(
     description='Trivial Postgres Queue for Django',
     author='Ben Timby',
     author_email='btimby@smartfile.com',
-    url='https://github.com/btimby/tpq/',
+    url='https://github.com/btimby/django-tpq/',
     packages=find_packages(),
     install_requires=required,
     include_package_data=True,
